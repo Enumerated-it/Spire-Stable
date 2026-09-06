@@ -20,8 +20,15 @@ export interface ServiceItem {
 
 export interface LegalIdentity {
   founderName: string;
-  matricule: string;
-  certifiedContribution: string;
+  /** Numéro d'état civil : usage restreint à l'attestation (jamais en <meta>, header, footer). */
+  matriculeRestricted: string;
+  contribution: {
+    /** null tant que l'inventaire MOC/MOC+ n'est pas certifié */
+    amountMAD: number | null;
+    status: 'A_CERTIFIER_PAR_INVENTAIRE' | 'CERTIFIE';
+    method: string;
+    inventoryScope: string;
+  };
   iceNumber: string;
   isocNumber: string;
   portalDesignation: string;

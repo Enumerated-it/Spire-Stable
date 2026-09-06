@@ -1,6 +1,6 @@
 import React from 'react';
 import { ShieldCheck, Hash, Award, ArrowUp, FileText } from 'lucide-react';
-import { LEGAL_IDENTITY, SERVICES_LIST } from '../data/servicesData';
+import { LEGAL_IDENTITY, SERVICES_LIST, contributionLabel, isContributionCertified } from '../data/servicesData';
 import { ServiceItem } from '../types';
 
 interface FooterProps {
@@ -64,8 +64,8 @@ export const Footer: React.FC<FooterProps> = ({ onSelectService, onOpenAttestati
             <span>OBJECTIO HUB — PORTAIL DE DROIT POSITIF</span>
           </div>
           <p className="text-slate-400 text-xs leading-relaxed max-w-xl">
-            Propriété exclusive de <strong>{LEGAL_IDENTITY.founderName} ({LEGAL_IDENTITY.matricule})</strong>. 
-            Écosystème fondé sur une valeur d'apport certifiée de <span className="text-amber-300 font-mono font-semibold">{LEGAL_IDENTITY.certifiedContribution}</span>.
+            Propriété exclusive de <strong>{LEGAL_IDENTITY.founderName}</strong>. 
+            Écosystème fondé sur un apport en nature : <span className="text-amber-300 font-mono font-semibold">{contributionLabel()}</span>.
           </p>
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 text-[11px] font-mono text-slate-500">
             <span>ICE : {LEGAL_IDENTITY.iceNumber}</span>
@@ -79,17 +79,18 @@ export const Footer: React.FC<FooterProps> = ({ onSelectService, onOpenAttestati
         <div className="flex flex-col sm:flex-row items-center gap-3">
           <button
             onClick={onOpenAttestation}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-amber-500/40 text-amber-300 text-xs font-semibold transition-colors cursor-pointer"
+            disabled={!isContributionCertified()}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-amber-500/40 text-amber-300 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <FileText className="w-3.5 h-3.5" />
-            <span>Voir l'Attestation d'Apport (208K MAD)</span>
+            <span>{isContributionCertified() ? "Voir l'Attestation d'Apport" : 'Attestation disponible après inventaire'}</span>
           </button>
         </div>
       </div>
 
       {/* Bottom bar */}
       <div className="border-t border-slate-900 bg-slate-950/80 py-3 text-center text-[11px] text-slate-600 font-mono">
-        © {new Date().getFullYear()} Objectio Hub • Mohamed MORCHID (964 R/1970) • Conformité D.O.C & Droit Positif
+        © {new Date().getFullYear()} Objectio Hub • Mohamed MORCHID • Conformité D.O.C & Droit Positif
       </div>
     </footer>
   );

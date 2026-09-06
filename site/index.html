@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spire-Stable — morchidit.morchid.digital</title>
+<style>
+  :root{--bg:#0f1419;--side:#161c24;--txt:#e6edf3;--muted:#8b98a5;--acc:#3fb950;--line:#2a3441}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex}
+  aside{width:260px;background:var(--side);border-right:1px solid var(--line);padding:1rem;position:fixed;inset:0 auto 0 0;overflow-y:auto;transition:transform .25s;z-index:10}
+  aside h1{font-size:1.05rem;letter-spacing:.04em;text-transform:uppercase;color:var(--acc);margin-bottom:.25rem}
+  aside small{color:var(--muted);display:block;margin-bottom:1rem;word-break:break-all}
+  aside ul{list-style:none}
+  aside li a{display:block;padding:.55rem .7rem;border-radius:6px;color:var(--txt);text-decoration:none;font-size:.93rem}
+  aside li a:hover,aside li a.active{background:#1f2937;color:var(--acc)}
+  aside li a span{display:block;font-size:.75rem;color:var(--muted)}
+  main{margin-left:260px;padding:2rem;flex:1}
+  main h2{font-weight:600;margin-bottom:.5rem}
+  main p{color:var(--muted);line-height:1.6;max-width:60ch}
+  #burger{display:none;position:fixed;top:.8rem;left:.8rem;z-index:20;background:var(--side);border:1px solid var(--line);color:var(--txt);padding:.45rem .7rem;border-radius:6px;font-size:1.1rem}
+  @media(max-width:768px){
+    aside{transform:translateX(-100%)}
+    aside.open{transform:none}
+    main{margin-left:0;padding:4rem 1.2rem 2rem}
+    #burger{display:block}
+  }
+</style>
+</head>
+<body>
+<button id="burger" aria-label="Menu">☰</button>
+<aside id="side">
+  <h1>Spire-Stable</h1>
+  <small>morchidit.morchid.digital</small>
+  <ul id="nav"><li><a href="#">Chargement…</a></li></ul>
+</aside>
+<main>
+  <h2 id="titre">Bienvenue</h2>
+  <p id="desc">Sélectionnez un projet dans la barre latérale. Chaque dossier du dépôt <b>Spire-Stable</b> apparaît ici automatiquement.</p>
+</main>
+<script>
+(function(){
+  const nav=document.getElementById('nav'),side=document.getElementById('side');
+  document.getElementById('burger').onclick=()=>side.classList.toggle('open');
+  function render(items){
+    nav.innerHTML='';
+    items.forEach(it=>{
+      const a=document.createElement('a');
+      // dossier avec index.html → page réelle ; sinon → ancre #-dossier (schéma existant)
+      a.href=it.hasIndex?'/'+it.path:'#-'+it.name;
+      a.dataset.name=it.name;
+      a.innerHTML=it.name+'<span>'+(it.title||'')+'</span>';
+      if(!it.hasIndex){a.onclick=()=>{select(it);side.classList.remove('open');};}
+      const li=document.createElement('li');li.appendChild(a);nav.appendChild(li);
+    });
+    const h=location.hash.replace(/^#-?/,'');
+    const cur=items.find(i=>i.name===h);if(cur)select(cur);
+  }
+  function select(it){
+    document.querySelectorAll('#nav a').forEach(x=>x.classList.toggle('active',x.dataset.name===it.name));
+    document.getElementById('titre').textContent=it.title||it.name;
+    document.getElementById('desc').innerHTML='Dossier <code>'+it.path+'</code> — <a style="color:var(--acc)" href="https://github.com/Enumerated-it/Spire-Stable/tree/main/'+it.path+'">voir sur GitHub</a>';
+  }
+  fetch('sidebar.json',{cache:'no-store'}).then(r=>r.json()).then(render)
+    .catch(()=>{nav.innerHTML='<li><a href="#">sidebar.json introuvable</a></li>';});
+})();
+</script>
+</body>
+</html>

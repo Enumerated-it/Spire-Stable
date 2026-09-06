@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { SERVICES_LIST, LEGAL_IDENTITY } from './data/servicesData';
+import { SERVICES_LIST, LEGAL_IDENTITY, contributionLabel } from './data/servicesData';
 import { ServiceItem } from './types';
 import { Header } from './components/Header';
 import { ServiceCard } from './components/ServiceCard';
@@ -169,9 +169,9 @@ export default function App() {
               <Award className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-xs text-slate-400 block">Valeur d'Apport Probatoire</span>
+              <span className="text-xs text-slate-400 block">Apport en nature</span>
               <strong className="text-base text-amber-300 font-mono font-bold">
-                {LEGAL_IDENTITY.certifiedContribution}
+                {contributionLabel()}
               </strong>
               <p className="text-[11px] text-slate-500 mt-0.5">
                 Consacrée aux 15 services Objectio par Mohamed MORCHID.
@@ -204,7 +204,7 @@ export default function App() {
                 {LEGAL_IDENTITY.isocNumber}
               </strong>
               <p className="text-[11px] text-slate-500 mt-0.5">
-                Matricule titulaire 964 R/1970 • Standards d'intégrité numérique.
+                Standards d'intégrité numérique.
               </p>
             </div>
           </div>
@@ -263,7 +263,7 @@ export default function App() {
         hasNext={activeServiceIndex >= 0 && activeServiceIndex < SERVICES_LIST.length - 1}
       />
 
-      {/* Legal Certified Contribution Attestation Modal (208 000 MAD) */}
+      {/* Attestation d'apport (active uniquement après certification de l'inventaire) */}
       <AttestationModal
         isOpen={isAttestationOpen}
         onClose={() => setIsAttestationOpen(false)}

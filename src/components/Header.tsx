@@ -10,7 +10,7 @@ import {
   ExternalLink,
   Award
 } from 'lucide-react';
-import { LEGAL_IDENTITY } from '../data/servicesData';
+import { LEGAL_IDENTITY, contributionLabel, isContributionCertified } from '../data/servicesData';
 import { ServiceCategory } from '../types';
 
 interface HeaderProps {
@@ -66,7 +66,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           <div className="flex items-center gap-3 font-mono text-[11px]">
             <span className="text-amber-400/90 font-semibold flex items-center gap-1">
-              <Award className="w-3.5 h-3.5" /> Apport : {LEGAL_IDENTITY.certifiedContribution}
+              <Award className="w-3.5 h-3.5" /> Apport : {contributionLabel()}
             </span>
             <span className="text-slate-500">|</span>
             <span className="text-slate-300">ICE : {LEGAL_IDENTITY.iceNumber}</span>
@@ -89,24 +89,21 @@ export const Header: React.FC<HeaderProps> = ({
                 Objectio Hub
               </h1>
               <span className="text-sm sm:text-base font-semibold text-slate-400 font-['Plus_Jakarta_Sans',sans-serif]">
-                par <span className="text-amber-200 underline decoration-amber-500/40 underline-offset-4">{LEGAL_IDENTITY.founderName}</span>{' '}
-                <span className="text-slate-400 text-xs sm:text-sm font-mono bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700">
-                  ({LEGAL_IDENTITY.matricule})
-                </span>
+                par <span className="text-amber-200 underline decoration-amber-500/40 underline-offset-4">{LEGAL_IDENTITY.founderName}</span>
               </span>
             </div>
 
             <p className="text-slate-300 max-w-3xl text-sm sm:text-base leading-relaxed">
-              Architecture centrale et portail de Droit Positif fédérant 15 services d’ingénierie juridique, financière et technologique, adossée à une{' '}
-              <strong className="text-amber-300 font-semibold">valeur d'apport certifiée de {LEGAL_IDENTITY.certifiedContribution}</strong>.
+              Architecture centrale et portail de Droit Positif fédérant 15 services d’ingénierie juridique, financière et technologique, adossée à un{' '}
+              <strong className="text-amber-300 font-semibold">apport en nature valorisé par inventaire ({LEGAL_IDENTITY.contribution.method})</strong>.
             </p>
 
             {/* Official Badges Pills */}
             <div className="flex flex-wrap items-center gap-2.5 pt-1">
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900 border border-amber-500/40 shadow-sm text-xs text-slate-200">
                 <span className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_#f59e0b]"></span>
-                <span className="text-slate-400">Apport certifié :</span>
-                <strong className="text-amber-300 font-mono font-bold">{LEGAL_IDENTITY.certifiedContribution}</strong>
+                <span className="text-slate-400">Apport en nature :</span>
+                <strong className="text-amber-300 font-mono font-bold">{contributionLabel()}</strong>
               </div>
 
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700/80 text-xs text-slate-200">
@@ -129,10 +126,12 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex flex-row sm:flex-col items-stretch sm:items-end justify-start gap-2.5 shrink-0">
             <button
               onClick={onOpenAttestation}
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 font-bold text-xs sm:text-sm shadow-lg shadow-amber-950/40 transition-all active:scale-[0.98] cursor-pointer"
+              disabled={!isContributionCertified()}
+              title={isContributionCertified() ? undefined : 'Disponible après certification de l’inventaire MOC/MOC+'}
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 font-bold text-xs sm:text-sm shadow-lg shadow-amber-950/40 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <FileText className="w-4 h-4" />
-              <span>Attestation d’Apport (208K MAD)</span>
+              <span>{isContributionCertified() ? 'Attestation d’Apport' : 'Attestation d’Apport — inventaire en cours'}</span>
             </button>
 
             <button

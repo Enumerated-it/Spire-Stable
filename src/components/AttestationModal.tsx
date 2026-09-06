@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, Printer, ShieldCheck, Award, FileCheck, CheckCircle2 } from 'lucide-react';
-import { LEGAL_IDENTITY } from '../data/servicesData';
+import { LEGAL_IDENTITY, contributionLabel } from '../data/servicesData';
 
 interface AttestationModalProps {
   isOpen: boolean;
@@ -62,7 +62,7 @@ export const AttestationModal: React.FC<AttestationModalProps> = ({ isOpen, onCl
             <div>
               <span className="text-slate-400 block print:text-gray-500">Titulaire & Fondateur :</span>
               <strong className="text-slate-100 text-sm print:text-black">{LEGAL_IDENTITY.founderName}</strong>
-              <div className="text-amber-400 font-semibold mt-0.5 print:text-black">Matricule : {LEGAL_IDENTITY.matricule}</div>
+              <div className="text-amber-400 font-semibold mt-0.5 print:text-black">Matricule : {LEGAL_IDENTITY.matriculeRestricted}</div>
             </div>
 
             <div>
@@ -75,13 +75,13 @@ export const AttestationModal: React.FC<AttestationModalProps> = ({ isOpen, onCl
           {/* Certified Amount Highlight */}
           <div className="p-5 rounded-xl bg-gradient-to-r from-amber-950/40 via-slate-900 to-amber-950/20 border border-amber-500/50 text-center space-y-1 print:bg-white print:border-black">
             <span className="text-xs uppercase tracking-wider text-slate-400 font-mono">
-              Montant Total de la Valeur d'Apport Évaluée et Certifiée
+              Valeur de l'Apport en Nature
             </span>
             <div className="text-3xl sm:text-4xl font-extrabold text-amber-300 font-mono tracking-tight print:text-black">
-              {LEGAL_IDENTITY.certifiedContribution}
+              {contributionLabel()}
             </div>
             <span className="text-[11px] text-slate-400 block">
-              (Deux cent huit mille Dirhams Marocains • Certifié net d'évaluation)
+              (Valeur résultant de l’inventaire {LEGAL_IDENTITY.contribution.method} sur {LEGAL_IDENTITY.contribution.inventoryScope})
             </span>
           </div>
 
@@ -134,7 +134,7 @@ export const AttestationModal: React.FC<AttestationModalProps> = ({ isOpen, onCl
           {/* Legal Certification Statement */}
           <div className="text-xs text-slate-400 leading-relaxed space-y-2 border-t border-slate-800 pt-4 print:border-black print:text-gray-700">
             <p>
-              Le présent document atteste que l’ensemble des 15 services référencés sur le portail <strong>Objectio Hub</strong> constituent le socle d’exploitation directe et certifiée de <strong>M. Mohamed MORCHID (964 R/1970)</strong>.
+              Le présent document atteste que l’ensemble des 15 services référencés sur le portail <strong>Objectio Hub</strong> constituent le socle d’exploitation directe et certifiée de <strong>M. {LEGAL_IDENTITY.founderName} ({LEGAL_IDENTITY.matriculeRestricted})</strong>.
             </p>
             <p className="text-[11px] italic">
               Conformément aux dispositions du Droit des Obligations et des Contrats et aux règles de transparence des affaires en vigueur au Maroc.
@@ -147,7 +147,7 @@ export const AttestationModal: React.FC<AttestationModalProps> = ({ isOpen, onCl
               <CheckCircle2 className="w-5 h-5 text-emerald-400" />
               <div>
                 <div className="font-semibold text-slate-200 print:text-black">Horodatage d’Intégrité</div>
-                <div className="text-[11px] text-slate-500 font-mono">Code Réf : OBJ-208K-964R</div>
+                <div className="text-[11px] text-slate-500 font-mono">Code Réf : OBJ-APPORT-{LEGAL_IDENTITY.contribution.status}</div>
               </div>
             </div>
 

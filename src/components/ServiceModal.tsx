@@ -15,7 +15,7 @@ import {
 import { ServiceItem } from '../types';
 import { ServiceWorkbench } from './interactive/ServiceWorkbenches';
 import { copyToClipboard, getFullDeepLink } from '../utils/deepLink';
-import { LEGAL_IDENTITY } from '../data/servicesData';
+import { LEGAL_IDENTITY, contributionLabel } from '../data/servicesData';
 
 interface ServiceModalProps {
   service: ServiceItem | null;
@@ -145,7 +145,7 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
               {service.legalBasis}
             </p>
             <div className="text-[11px] text-slate-500 font-mono pt-1">
-              Réf. Registre : {LEGAL_IDENTITY.founderName} ({LEGAL_IDENTITY.matricule}) • ICE {LEGAL_IDENTITY.iceNumber} • {LEGAL_IDENTITY.isocNumber}
+              Réf. Registre : {LEGAL_IDENTITY.founderName} • ICE {LEGAL_IDENTITY.iceNumber} • {LEGAL_IDENTITY.isocNumber}
             </div>
           </div>
 
@@ -187,7 +187,7 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
         {/* Footer */}
         <div className="px-6 py-3.5 border-t border-slate-800 bg-slate-950 flex flex-wrap items-center justify-between gap-3 shrink-0 text-xs">
           <div className="text-slate-500 font-mono text-[11px]">
-            Valeur d'apport certifiée : <strong className="text-amber-400">{LEGAL_IDENTITY.certifiedContribution}</strong>
+            Apport en nature : <strong className="text-amber-400">{contributionLabel()}</strong>
           </div>
           <button
             onClick={onClose}

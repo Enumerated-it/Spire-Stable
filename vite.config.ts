@@ -5,6 +5,8 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
+    // Le Hub est publie sous https://morchidit.morchidi.digital/objectio/ (Spire-Stable = racine)
+    base: '/objectio/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {

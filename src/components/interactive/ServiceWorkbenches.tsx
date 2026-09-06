@@ -25,7 +25,7 @@ import {
   Clock
 } from 'lucide-react';
 import { ServiceItem } from '../../types';
-import { LEGAL_IDENTITY } from '../../data/servicesData';
+import { LEGAL_IDENTITY, contributionLabel } from '../../data/servicesData';
 import { copyToClipboard } from '../../utils/deepLink';
 
 interface WorkbenchProps {
@@ -39,11 +39,11 @@ export const PvCertifWorkbench: React.FC = () => {
   const [quorum, setQuorum] = useState('87.5');
   const [date, setDate] = useState('2026-09-05');
   const [resolutions, setResolutions] = useState(
-    "1. Approbation des comptes et quitus de gestion.\n2. Affectation du résultat d'exploitation.\n3. Ratification de l'apport certifié de 208 000 MAD."
+    "1. Approbation des comptes et quitus de gestion.\n2. Affectation du résultat d'exploitation.\n3. Ratification de l'apport en nature (valeur issue de l'inventaire MOC/MOC+)."
   );
   const [copied, setCopied] = useState(false);
 
-  const hashStamp = `CERT-OBJ-${pvType.slice(0, 3).toUpperCase()}-964R-${Math.abs(
+  const hashStamp = `CERT-OBJ-${pvType.slice(0, 3).toUpperCase()}-ICE-${Math.abs(
     entityName.length * 7919 + parseInt(quorum || '0') * 13
   ).toString(16).toUpperCase()}`;
 
@@ -51,9 +51,9 @@ export const PvCertifWorkbench: React.FC = () => {
 PROCES-VERBAL OFFICIEL • CERTIFICATION PROBATOIRE
 ÉCOSYSTÈME OBJECTIO — PORTAIL DE DROIT POSITIF
 =====================================================
-Titulaire du Registre : ${LEGAL_IDENTITY.founderName} (${LEGAL_IDENTITY.matricule})
+Titulaire du Registre : ${LEGAL_IDENTITY.founderName}
 ICE : ${LEGAL_IDENTITY.iceNumber} | ${LEGAL_IDENTITY.isocNumber}
-Valeur d'apport certifiée de référence : ${LEGAL_IDENTITY.certifiedContribution}
+Apport en nature : ${contributionLabel()}
 
 TYPE D'ACTE : ${pvType}
 ENTITÉ CONCERNÉE : ${entityName}
@@ -191,7 +191,7 @@ CADRE : DROIT POSITIF DES AFFAIRES MAROCAIN (D.O.C & CODE DE COMMERCE)
 AUTHENTIFICATION : OBJECTIO REDAC • ICE ${LEGAL_IDENTITY.iceNumber}
 
 ENTRE LES SOUSSIGNÉS :
-1. Mohamed MORCHID (964 R/1970), agissant pour l'Écosystème Objectio (Apport 208 000 MAD).
+1. Mohamed MORCHID, agissant pour l'Écosystème Objectio (apport en nature en cours d'inventaire MOC/MOC+).
 2. La Partie Contractante signataire.
 
 CLAUSES CONTRACTUELLES RETENUES :
@@ -285,16 +285,16 @@ export const BusinessPlanWorkbench: React.FC = () => {
   const [chargesDirectes, setChargesDirectes] = useState(140000);
   const [chargesFixes, setChargesFixes] = useState(120000);
 
-  const certifiedApport = 208000;
+  const certifiedApport = LEGAL_IDENTITY.contribution.amountMAD; // null tant que non certifié
   const margeBrute = caAn1 - chargesDirectes;
   const resultatExploitation = margeBrute - chargesFixes;
-  const rentabiliteApport = Math.round((resultatExploitation / certifiedApport) * 100);
+  const rentabiliteApport = certifiedApport ? Math.round((resultatExploitation / certifiedApport) * 100) : null;
 
   return (
     <div className="space-y-5">
       <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200 flex items-center justify-between">
-        <span>Socle de Capital & Actifs Certifiés d'Origine :</span>
-        <strong className="font-mono text-sm text-amber-300">208 000 MAD</strong>
+        <span>Apport en nature d'origine :</span>
+        <strong className="font-mono text-sm text-amber-300">{contributionLabel()}</strong>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -346,12 +346,12 @@ export const BusinessPlanWorkbench: React.FC = () => {
         </div>
         <div>
           <span className="text-[11px] text-slate-500 block">Rendement s/ Apport</span>
-          <strong className="text-sm text-amber-300">{rentabiliteApport}% / an</strong>
+          <strong className="text-sm text-amber-300">{rentabiliteApport !== null ? `${rentabiliteApport}% / an` : 'Après inventaire'}</strong>
         </div>
         <div>
           <span className="text-[11px] text-slate-500 block">Délai Récupération</span>
           <strong className="text-sm text-cyan-400">
-            {resultatExploitation > 0 ? (certifiedApport / resultatExploitation).toFixed(1) + ' ans' : 'N/A'}
+            {certifiedApport && resultatExploitation > 0 ? (certifiedApport / resultatExploitation).toFixed(1) + ' ans' : 'N/A'}
           </strong>
         </div>
       </div>
@@ -470,7 +470,7 @@ export const ConventionEntraideWorkbench: React.FC = () => {
       <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs space-y-2">
         <div className="text-amber-400 font-semibold">CADRE CONVENTIONNEL D'ENTRAIDE ET DE SOLIDARITÉ</div>
         <p className="text-slate-300 leading-relaxed">
-          Le présent accord régit les modalités d'assistance réciproque entre <strong>{LEGAL_IDENTITY.founderName} ({LEGAL_IDENTITY.matricule})</strong> et <strong>{partnerName}</strong>. 
+          Le présent accord régit les modalités d'assistance réciproque entre <strong>{LEGAL_IDENTITY.founderName}</strong> et <strong>{partnerName}</strong>. 
           Les parties agissent en totale indépendance juridique, sans lien de subordination, dans le respect du Droit Positif et de la déontologie ISOC ({LEGAL_IDENTITY.isocNumber}).
         </p>
         <div className="text-emerald-400 pt-2 text-[11px]">
@@ -523,7 +523,7 @@ export const AlerteSecuriteWorkbench: React.FC = () => {
 
 // S07: Gestion Licences
 export const GestionLicencesWorkbench: React.FC = () => {
-  const [licenseKey, setLicenseKey] = useState('OBJ-LIC-2026-964R-7910');
+  const [licenseKey, setLicenseKey] = useState('OBJ-LIC-2026-ICE-7910');
   const [clientName, setClientName] = useState('Partenaire Exploitant');
 
   const generateNewKey = () => {
@@ -750,7 +750,7 @@ export const PaiementCihWorkbench: React.FC = () => {
 
           <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 font-mono text-xs space-y-1">
             <span className="text-slate-500 block text-[11px]">Bénéficiaire Officiel :</span>
-            <strong className="text-slate-200 block">{LEGAL_IDENTITY.founderName} ({LEGAL_IDENTITY.matricule})</strong>
+            <strong className="text-slate-200 block">{LEGAL_IDENTITY.founderName}</strong>
             {showBank ? (
               <>
                 <span className="text-slate-500 block text-[11px] pt-1">RIB {LEGAL_IDENTITY.bank.name} (agence {LEGAL_IDENTITY.bank.agency}) :</span>
@@ -859,7 +859,7 @@ export const CarnetQuestionsWorkbench: React.FC = () => {
       cat: 'Droit des Sociétés',
     },
     {
-      q: 'Comment est protégée une valeur d\'apport certifiée (ex: 208 000 MAD) ?',
+      q: 'Comment est protégée la valeur d\'un apport en nature certifié ?',
       r: 'Elle est inscrite aux statuts, opposable au Registre du Commerce et consolidée par les actes de certification probatoire d\'Objectio.',
       cat: 'Capital & Finance',
     },
@@ -1035,7 +1035,7 @@ export const SuiviSequencesWorkbench: React.FC = () => {
   const [steps, setSteps] = useState([
     { id: 1, label: 'Rédaction Préliminaire & Formalisation de l\'Acte', done: true, delay: 'J+0' },
     { id: 2, label: 'Certification Probatoire & Scellement d\'Intégrité', done: true, delay: 'J+1' },
-    { id: 3, label: 'Émargement Numérique & Vérification d\'Identité (964 R/1970)', done: true, delay: 'J+2' },
+    { id: 3, label: 'Émargement Numérique & Vérification d\'Identité', done: true, delay: 'J+2' },
     { id: 4, label: 'Enregistrement Fiscal & Droits de Timbre', done: false, delay: 'J+7' },
     { id: 5, label: 'Dépôt au Greffe du Tribunal de Commerce & Parution B.O', done: false, delay: 'J+15' },
   ]);
@@ -1093,7 +1093,7 @@ export const SuiviSequencesWorkbench: React.FC = () => {
 // S15: Générateur de QR
 export const GenerateurQrWorkbench: React.FC = () => {
   const [content, setContent] = useState(
-    `OBJECTIO:ACTE-CERTIFIE;TITULAIRE=${LEGAL_IDENTITY.founderName};MATRICULE=${LEGAL_IDENTITY.matricule};ICE=${LEGAL_IDENTITY.iceNumber};APPORT=${LEGAL_IDENTITY.certifiedContribution};ISOC=2374734`
+    `OBJECTIO:ACTE-CERTIFIE;TITULAIRE=${LEGAL_IDENTITY.founderName};ICE=${LEGAL_IDENTITY.iceNumber};APPORT=${LEGAL_IDENTITY.contribution.status};ISOC=2374734`
   );
   const [qrUrl, setQrUrl] = useState('');
 
@@ -1134,7 +1134,7 @@ export const GenerateurQrWorkbench: React.FC = () => {
             <button
               onClick={() =>
                 setContent(
-                  `https://objectio-hub.ma/#pv-certif?ice=${LEGAL_IDENTITY.iceNumber}&matricule=964R1970`
+                  `https://morchidit.morchidi.digital/objectio/#pv-certif?ice=${LEGAL_IDENTITY.iceNumber}`
                 )
               }
               className="px-2.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-[11px] text-slate-300"
@@ -1144,12 +1144,12 @@ export const GenerateurQrWorkbench: React.FC = () => {
             <button
               onClick={() =>
                 setContent(
-                  `ATTESTATION-APPORT:208000MAD;MOHAMED_MORCHID;964R/1970;ICE:003707910000033`
+                  `ATTESTATION-APPORT:${LEGAL_IDENTITY.contribution.status};MOHAMED_MORCHID;ICE:${LEGAL_IDENTITY.iceNumber}`
                 )
               }
               className="px-2.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-[11px] text-slate-300"
             >
-              Données Apport 208K
+              Données Apport
             </button>
           </div>
 

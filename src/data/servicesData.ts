@@ -2,8 +2,13 @@ import { LegalIdentity, ServiceItem } from '../types';
 
 export const LEGAL_IDENTITY: LegalIdentity = {
   founderName: 'Mohamed MORCHID',
-  matricule: '964 R/1970',
-  certifiedContribution: '208 000 MAD',
+  matriculeRestricted: '964 R/1970',
+  contribution: {
+    amountMAD: null,
+    status: 'A_CERTIFIER_PAR_INVENTAIRE',
+    method: 'MOC / MOC+',
+    inventoryScope: '150 dossiers',
+  },
   iceNumber: '003707910000033',
   isocNumber: 'ISOC N° 2374734',
   portalDesignation: 'Portail de Droit Positif',
@@ -68,17 +73,17 @@ export const SERVICES_LIST: ServiceItem[] = [
     category: 'finance',
     categoryLabel: 'Finance & Stratégie',
     tagline: 'Modélisation financière et viabilité sur base d’apport certifié',
-    shortDesc: 'Architecture prévisionnelle, compte de résultat pro forma, plan de trésorerie et intégration de la valeur d’apport (208 000 MAD).',
+    shortDesc: 'Architecture prévisionnelle, compte de résultat pro forma, plan de trésorerie et intégration de la valeur d’apport en nature (inventaire MOC/MOC+ en cours).',
     legalBasis: 'Plan Comptable Général Marocain (CGNC) • Normes d’évaluation des apports en nature et incorporels.',
     features: [
       'Projection financière pluriannuelle (3 à 5 exercices)',
-      'Intégration comptable de l’apport certifié de 208 000 MAD',
+      'Intégration comptable de l’apport en nature (valeur issue de l’inventaire MOC/MOC+)',
       'Calcul automatique du BFR, CAF, VAN et TRI',
       'Synthèse exécutive prête pour investisseurs et banques'
     ],
     primaryMetric: {
       label: 'Apport de Référence',
-      value: '208 000 MAD'
+      value: 'Inventaire MOC/MOC+ en cours'
     }
   },
   {
@@ -334,3 +339,13 @@ export const SERVICES_LIST: ServiceItem[] = [
     }
   }
 ];
+
+/** Libellé public de l'apport : jamais un montant tant que le statut n'est pas CERTIFIE. */
+export const contributionLabel = (): string => {
+  const c = LEGAL_IDENTITY.contribution;
+  return c.status === 'CERTIFIE' && c.amountMAD !== null
+    ? `${c.amountMAD.toLocaleString('fr-MA')} MAD`
+    : `En cours d’inventaire (${c.method})`;
+};
+export const isContributionCertified = (): boolean =>
+  LEGAL_IDENTITY.contribution.status === 'CERTIFIE' && LEGAL_IDENTITY.contribution.amountMAD !== null;

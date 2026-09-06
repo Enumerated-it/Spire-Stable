@@ -19,13 +19,44 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm install --no-audit --no-fund
-      - run: npm run build
-      - name: Create .nojekyll
-        run: touch dist/.nojekyll
+      - name: Build du Hub Objectio (Vite, base /objectio/)
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+      - name: Assembler le site (racine = sidebar, /objectio/ = Hub, autres dossiers statiques)
+        run: |
+          rm -rf _site && mkdir -p _site/objectio
+          cp -r dist/. _site/objectio/
+          cp site/index.html _site/index.html
+          cp CNAME _site/CNAME
+          touch _site/.nojekyll
+          # Tout dossier de premier niveau contenant un index.html est publie tel quel (futurs subtrees)
+          for d in */; do
+            d="${d%/}"
+            case "$d" in src|site|dist|_site|node_modules|public) continue;; esac
+            if [ -f "$d/index.html" ]; then mkdir -p "_site/$d" && cp -r "$d/." "_site/$d/"; fi
+          done
+      - name: Generer sidebar.json
+        run: |
+          python3 - <<'PY'
+          import json, os, re
+          items = []
+          for d in sorted(os.listdir('_site')):
+              p = os.path.join('_site', d)
+              if not os.path.isdir(p) or d.startswith('.') or d == 'assets': continue
+              title = d
+              for src in (os.path.join(d, 'README.md'), os.path.join(p, 'index.html')):
+                  if os.path.exists(src):
+                      t = open(src, encoding='utf-8', errors='ignore').read()
+                      m = re.search(r'^#\s+(.+)$', t, re.M) or re.search(r'<title>(.*?)</title>', t, re.S | re.I)
+                      if m: title = m.group(1).strip(); break
+              items.append({'name': d, 'path': d + '/', 'title': title, 'hasIndex': os.path.exists(os.path.join(p, 'index.html'))})
+          json.dump(items, open('_site/sidebar.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
+          print(json.dumps(items, ensure_ascii=False, indent=1))
+          PY
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: 'dist'
+          path: '_site'
   deploy:
     needs: build
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
