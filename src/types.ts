@@ -26,4 +26,11 @@ export interface LegalIdentity {
   isocNumber: string;
   portalDesignation: string;
   jurisdiction: string;
+  bank: {
+    name: string;
+    agency: string;
+    rib: string;
+    iban: string;
+    swift: string;
+  };
 }

@@ -713,8 +713,9 @@ export const PaiementCihWorkbench: React.FC = () => {
   const [refDossier, setRefDossier] = useState('DOS-OBJ-2026-01');
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
   const [paidStatus, setPaidStatus] = useState(false);
+  const [showBank, setShowBank] = useState(false);
 
-  const cihRib = '230 780 003707910000033 45';
+  const cihRib = LEGAL_IDENTITY.bank.rib;
 
   useEffect(() => {
     const payload = `CIH:PAY;BENEF=${LEGAL_IDENTITY.founderName};ICE=${LEGAL_IDENTITY.iceNumber};MONTANT=${montant}MAD;REF=${refDossier};RIB=${cihRib}`;
@@ -750,8 +751,20 @@ export const PaiementCihWorkbench: React.FC = () => {
           <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 font-mono text-xs space-y-1">
             <span className="text-slate-500 block text-[11px]">Bénéficiaire Officiel :</span>
             <strong className="text-slate-200 block">{LEGAL_IDENTITY.founderName} ({LEGAL_IDENTITY.matricule})</strong>
-            <span className="text-slate-500 block text-[11px] pt-1">RIB CIH Bank :</span>
-            <span className="text-amber-400 font-bold block">{cihRib}</span>
+            {showBank ? (
+              <>
+                <span className="text-slate-500 block text-[11px] pt-1">RIB {LEGAL_IDENTITY.bank.name} (agence {LEGAL_IDENTITY.bank.agency}) :</span>
+                <span className="text-amber-400 font-bold block">{cihRib}</span>
+                <span className="text-slate-500 block text-[11px] pt-1">IBAN :</span>
+                <span className="text-slate-200 block">{LEGAL_IDENTITY.bank.iban}</span>
+                <span className="text-slate-500 block text-[11px] pt-1">SWIFT :</span>
+                <span className="text-slate-200 block">{LEGAL_IDENTITY.bank.swift}</span>
+              </>
+            ) : (
+              <button type="button" onClick={() => setShowBank(true)} className="mt-2 w-full py-1.5 rounded-md border border-amber-500/40 text-amber-400 text-[11px] font-semibold hover:bg-amber-500/10 cursor-pointer">
+                Afficher les coordonnées bancaires
+              </button>
+            )}
           </div>
 
           <button

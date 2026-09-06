@@ -8,6 +8,13 @@ export const LEGAL_IDENTITY: LegalIdentity = {
   isocNumber: 'ISOC N° 2374734',
   portalDesignation: 'Portail de Droit Positif',
   jurisdiction: 'Royaume du Maroc • Registre d’Apport & Droit Positif',
+  bank: {
+    name: 'CIH BANK',
+    agency: '610',
+    rib: '230 610 4704161211026600 95',
+    iban: 'MA64 2306 1047 0416 1211 0266 0095',
+    swift: 'CIHMMAMC',
+  },
 };
 
 export const SERVICES_LIST: ServiceItem[] = [
